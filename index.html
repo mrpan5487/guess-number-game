@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>亮制作
+    <title>GitHub 猜数字游戏</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input {
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px;
+            width: 150px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #hint {
+            color: #d9534f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>猜数字游戏（1-100）</h1>
+        <input type="number" id="guessInput" placeholder="输入数字">
+        <button onclick="checkGuess()">提交</button>
+        <p id="hint"></p>
+        <button onclick="restartGame()" style="background-color: #28a745;">重新开始</button>
+    </div>
+
+    <script>
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        function checkGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const hint = document.getElementById('hint');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                hint.textContent = "请输入1-100之间的数字！";
+                return;
+            }
+
+            attempts++;
+            if (guess < secretNumber) {
+                hint.textContent = "猜小了！";
+            } else if (guess > secretNumber) {
+                hint.textContent = "猜大了！";
+            } else {
+                hint.textContent = `🎉 恭喜！你用了 ${attempts} 次猜中！`;
+                document.getElementById('guessInput').disabled = true;
+                document.querySelector('button').disabled = true;
+            }
+            document.getElementById('guessInput').value = '';
+        }
+
+        function restartGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            document.getElementById('hint').textContent = '';
+            document.getElementById('guessInput').disabled = false;
+            document.querySelector('button').disabled = false;
+        }
+    </script>
+</body>
+</html>
