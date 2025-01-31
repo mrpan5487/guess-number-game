@@ -4,7 +4,8 @@
     <title>GitHub 猜数字游戏</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
+        /* 原有样式 */
+        body{
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
@@ -37,6 +38,13 @@
             color: #d9534f;
             font-weight: bold;
         }
+        /* 新增动画 */
+        @keyframes celebrate {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        .celebrate { animation: celebrate 0.5s ease-in-out; }
     </style>
 </head>
 <body>
@@ -45,12 +53,18 @@
         <input type="number" id="guessInput" placeholder="输入数字">
         <button onclick="checkGuess()">提交</button>
         <p id="hint"></p>
-        <button onclick="restartGame()" style="background-color: #28a745;">重新开始</button>
+        <p>已猜数字：<span id="history"></span></p>
+        <button onclick="restartGame()">重新开始</button>
     </div>
+
+    <!-- 音效 -->
+    <audio id="successSound" src="success.mp3"></audio>
 
     <script>
         let secretNumber = Math.floor(Math.random() * 100) + 1;
         let attempts = 0;
+        let history = []; // 历史记录数组
+        const MAX_ATTEMPTS = 10; // 最大尝试次数
 
         function checkGuess() {
             const guess = parseInt(document.getElementById('guessInput').value);
@@ -62,12 +76,25 @@
             }
 
             attempts++;
+            history.push(guess);
+            document.getElementById('history').textContent = history.join(', ');
+
+            if (attempts >= MAX_ATTEMPTS) {
+                hint.textContent = `❌ 挑战失败！正确答案是 ${secretNumber}`;
+                document.getElementById('guessInput').disabled = true;
+                document.querySelector('button').disabled = true;
+                return;
+            }
+
             if (guess < secretNumber) {
                 hint.textContent = "猜小了！";
             } else if (guess > secretNumber) {
                 hint.textContent = "猜大了！";
             } else {
                 hint.textContent = `🎉 恭喜！你用了 ${attempts} 次猜中！`;
+                hint.classList.add('celebrate');
+                setTimeout(() => hint.classList.remove('celebrate'), 500);
+                document.getElementById('successSound').play();
                 document.getElementById('guessInput').disabled = true;
                 document.querySelector('button').disabled = true;
             }
@@ -77,7 +104,9 @@
         function restartGame() {
             secretNumber = Math.floor(Math.random() * 100) + 1;
             attempts = 0;
+            history = [];
             document.getElementById('hint').textContent = '';
+            document.getElementById('history').textContent = '';
             document.getElementById('guessInput').disabled = false;
             document.querySelector('button').disabled = false;
         }
